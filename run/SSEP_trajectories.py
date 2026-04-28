@@ -4,17 +4,15 @@ from numba import njit, prange
 from matplotlib import pyplot as plt
 import matplotlib as mpl
 
-
+######################## SIMULATION PARAMETERS ########################
 rate = 1.0  # rate of coupling to the resevoirs compared to the rate of the system
-Nx = 7
-Ny = 7
+Nx = 4
+Ny = 4
 N = Nx * Ny
-
 V = -1.5
-
-num_iterations = 10000
+num_iterations = 100
 steps = 300  # Multiples of number of bonds
-
+########################################################################
 
 # Extract currents
 bonds = []
@@ -24,14 +22,12 @@ for y in range(Ny):
         n2 = (x+1) % Nx + y*Nx
 
         bonds.append((n1, n2))
-
 for x in range(Nx):
     for y in range(Ny-1):
         n1 = x % Nx + y*Nx
         n2 = x % Nx + (y+1)*Nx
 
         bonds.append((n1, n2))
-
 
 bonds = np.array(bonds, dtype=np.int32)  # Convert to numpy array for numba compatibility
 num_bonds = len(bonds)
@@ -143,7 +139,10 @@ def run_simulation():
         
 if __name__ == "__main__":
 
+    ######################## RUN SIMULATION #######################
     n_avg, avg_currents = run_simulation()
+
+    ################ PLOT THE FINAL TIME SNAPSHOT  #################
 
     plotting_threshold = 0.0  # Threshold for plotting currents
     marker_size = 750 * (3/Nx)**2  # Size of the markers for the density plot
@@ -170,12 +169,16 @@ if __name__ == "__main__":
                 U.append(x1-x2)
                 V.append(y1-y2)
     
-    fig, ax = plt.subplots()
-    
-    p1 = ax.quiver(X, Y, U, V, C, cmap="YlGn", angles='xy', scale_units='xy', scale=1, width=arrow_width)
-    p1.set_clim(0, np.max(C))
-    cb1 = plt.colorbar(p1, ax=ax, orientation='horizontal', shrink=0.5, pad=0.03)
-    cb1.set_label('Current Magnitude', labelpad=0)
+    fig, ax = plt.subplots(figsize = (6,6))
+
+    norm = mpl.colors.Normalize(vmin=0, vmax=0.2)
+    cmap_range = mpl.cm.YlGn(np.linspace(0, 1, 500))
+    cmap = mpl.colors.ListedColormap(cmap_range)
+    p1 = ax.quiver(X, Y, U, V, C, cmap=cmap, norm=norm, angles='xy', scale_units='xy', scale=1, width=arrow_width)
+    cb1 = plt.colorbar(p1, ax=ax, orientation='vertical', shrink=0.53, pad=0.1)
+    cb1.set_ticks(np.arange(0, 0.21, 0.04))
+    cb1.ax.tick_params(labelsize=13)
+    cb1.set_label('Current Magnitude', labelpad=1, fontsize = 15)
     
     X = []; Y = []; C = []
     for x in range(Nx):
@@ -188,22 +191,16 @@ if __name__ == "__main__":
     cmap_range = mpl.cm.RdBu_r(np.linspace(-0.5, 1.5, 500))
     cmap = mpl.colors.ListedColormap(cmap_range)
     p2 = ax.scatter(X, Y, c=C, cmap=cmap, s=marker_size, edgecolors= "black", vmin=0, vmax=1)
-    # p2 = ax.scatter(X, Y, c=C, cmap="RdBu_r", s=marker_size, edgecolors= "black", vmin=0, vmax=1)
-    cb2 = plt.colorbar(p2, ax=ax, orientation='horizontal', shrink=0.5, pad=0.03)
-    cb2.set_label('Density', labelpad=0)
+    cb2 = plt.colorbar(p2, ax=ax, orientation='vertical', shrink=0.53, pad=0.1)
+    cb2.set_ticks(np.arange(0, 1.1, 0.2))
+    cb2.ax.tick_params(labelsize=13)
+    cb2.set_label('Density', labelpad=1, fontsize = 15)
     
     # Add automatic padding to prevent cutoff
     ax.margins(0.1 * 3/Nx)  # Add padding around the data
-    # Alternatively, you could use: ax.set_xlim(-0.5, Nx-0.5); ax.set_ylim(-0.5, Ny-0.5)
-    
     ax.set_axis_off()
     ax.set_aspect('equal')
     
     plt.savefig(f"figures/SSEP_{Nx}x{Ny}_steps{steps}__V+1.5.pdf", bbox_inches='tight', pad_inches=0.1, dpi=300)
     
     plt.show()
-
-
-
-    
-
