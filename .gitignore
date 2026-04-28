@@ -1,3 +1,8 @@
+figures/
+.DS_Store
+.vscode/
+*.sif
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
