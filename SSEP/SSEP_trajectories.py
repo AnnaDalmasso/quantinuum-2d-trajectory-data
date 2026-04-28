@@ -2,6 +2,7 @@ import numpy as np
 from numba import njit, prange
 
 from matplotlib import pyplot as plt
+import matplotlib as mpl
 
 
 rate = 1.0  # rate of coupling to the resevoirs compared to the rate of the system
@@ -9,9 +10,9 @@ Nx = 7
 Ny = 7
 N = Nx * Ny
 
-V = -1.0
+V = -1.5
 
-num_iterations = 1000000
+num_iterations = 10000
 steps = 300  # Multiples of number of bonds
 
 
@@ -184,7 +185,10 @@ if __name__ == "__main__":
             Y.append(y)
             C.append(n_avg[-1,n])
     
-    p2 = ax.scatter(X, Y, c=C, cmap="RdBu_r", s=marker_size, edgecolors= "black", vmin=0, vmax=1)
+    cmap_range = mpl.cm.RdBu_r(np.linspace(-0.5, 1.5, 500))
+    cmap = mpl.colors.ListedColormap(cmap_range)
+    p2 = ax.scatter(X, Y, c=C, cmap=cmap, s=marker_size, edgecolors= "black", vmin=0, vmax=1)
+    # p2 = ax.scatter(X, Y, c=C, cmap="RdBu_r", s=marker_size, edgecolors= "black", vmin=0, vmax=1)
     cb2 = plt.colorbar(p2, ax=ax, orientation='horizontal', shrink=0.5, pad=0.03)
     cb2.set_label('Density', labelpad=0)
     
@@ -195,7 +199,7 @@ if __name__ == "__main__":
     ax.set_axis_off()
     ax.set_aspect('equal')
     
-    # plt.savefig(f"figures/SEP_8x8_V+1.pdf", bbox_inches='tight', pad_inches=0.1, dpi=300)
+    plt.savefig(f"figures/SSEP_{Nx}x{Ny}_steps{steps}__V+1.5.pdf", bbox_inches='tight', pad_inches=0.1, dpi=300)
     
     plt.show()
 
