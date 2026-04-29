@@ -6,11 +6,11 @@ import matplotlib as mpl
 
 ######################## SIMULATION PARAMETERS ########################
 rate = 1.0  # rate of coupling to the resevoirs compared to the rate of the system
-Nx = 4
-Ny = 4
+Nx = 7
+Ny = 7
 N = Nx * Ny
-V = -1.5
-num_iterations = 100
+V = -1.0
+num_iterations = 1000000
 steps = 300  # Multiples of number of bonds
 ########################################################################
 
@@ -140,8 +140,9 @@ def run_simulation():
 if __name__ == "__main__":
 
     ######################## RUN SIMULATION #######################
+    print("Running trajectories...")
     n_avg, avg_currents = run_simulation()
-
+    print("Finished!")
     ################ PLOT THE FINAL TIME SNAPSHOT  #################
 
     plotting_threshold = 0.0  # Threshold for plotting currents
@@ -201,6 +202,6 @@ if __name__ == "__main__":
     ax.set_axis_off()
     ax.set_aspect('equal')
     
-    plt.savefig(f"figures/SSEP_{Nx}x{Ny}_steps{steps}__V+1.5.pdf", bbox_inches='tight', pad_inches=0.1, dpi=300)
+    plt.savefig(f"figures/SSEP_{Nx}x{Ny}_steps{steps}_V+1_trajectories{num_iterations}.pdf", bbox_inches='tight', pad_inches=0.1, dpi=300)
     
     plt.show()
